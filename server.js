@@ -129,19 +129,37 @@ app.get('/search/:text', (req, res) => {
 });
 
 // set up Mongo
+// function mongoConnect() {
+//     return new Promise((resolve, reject) => {
+//         var mongoURL = process.env.MONGO_URL || 'mongodb://mongodb:27017/catalogue';
+//         mongoClient.connect(mongoURL, (error, client) => {
+//             if(error) {
+//                 reject(error);
+//             } else {
+//                 db = client.db('catalogue');
+//                 collection = db.collection('products');
+//                 resolve('connected');
+//             }
+//         });
+//     });
+// }
+
 function mongoConnect() {
     return new Promise((resolve, reject) => {
-        var mongoURL = process.env.MONGO_URL || 'mongodb://mongodb:27017/catalogue';
-        mongoClient.connect(mongoURL, (error, client) => {
-            if(error) {
-                reject(error);
-            } else {
-                db = client.db('catalogue');
-                collection = db.collection('products');
-                resolve('connected');
-            }
-        });
-    });
+    var.mongoURL = process.env.MONGO_URL || 'mongodb://username:password@mongodb:27017/catalogue?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false'
+    var client = mongoClient.connect(mongoURL,
+      {
+        tlsCAFile: `rds-combined-ca-bundle.pem` //Specify the DocDB; cert
+    }, (error, client) => {
+    if(error) {
+        reject(error);
+    } else {
+        db = client.db('catalogue');
+        collection = db.collection('products');
+        resolve('connected');
+    }
+});
+});
 }
 
 // mongodb connection retry loop
@@ -162,4 +180,3 @@ const port = process.env.CATALOGUE_SERVER_PORT || '8080';
 app.listen(port, () => {
     logger.info('Started on port', port);
 });
-
